@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+
+    <color name="very_dark_cyan">#163C29</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="light_grayish_orange">#F2E7DE</color>
+    <color name="light_grayish_orange_2">#F1E7E0</color>
+    <color name="light_grayish_orange_3">#FCF8F2</color>
+    <color name="light_grayish_orange_4">#DDC9B9</color>
+    <color name="light_grayish_red">#fdf0f0</color>
+    <color name="very_soft_red">#DFAB9C</color>
+    <color name="very_soft_red_2">#e79987</color>
+    <color name="very_soft_red_3">#DE9C8D</color>
+    <color name="soft_red">#f29580</color>
+    <color name="dark_moderate_red">#A05B58</color>
+    <color name="dark_moderate_red_2">#a95653</color>
+    <color name="mostly_desaturated_dark_red">#985F5C</color>
+    <color name="mostly_saturated_dark_red">#91625F</color>
+    <color name="moderate_cyan">#399cbd</color>
+    <color name="very_dark_gray">#707070</color>
+    <color name="dark_grayish_cyan">#8CA292</color>
+    <color name="lime_green">#1F3A29</color>
+    <color name="light_grayish_lime_green">#DBEBDD</color>
+    <color name="very_dark_grayish_lime_green">#253829</color>
+    <color name="shadow_color_dark">#91625F4D</color>
+</resources>
