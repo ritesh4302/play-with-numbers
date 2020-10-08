@@ -1,6 +1,7 @@
 package ai.bright.maths.ui
 
 import ai.bright.maths.domain.model.Equation
+import ai.bright.maths.domain.model.GameMode
 import ai.bright.maths.domain.model.Operator
 import android.content.Context
 import android.os.CountDownTimer
@@ -19,8 +20,12 @@ class QuestionViewModel @ViewModelInject constructor(
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val quizDuration = 90 * DateUtils.SECOND_IN_MILLIS
-    val totalNumberOfQuestions = 10
+    private var gameLevel: Int = 1
+    private var totalNumberOfQuestions = 10
+    private var gameMode: GameMode = GameMode.VISUAL
+    private var operatorList: List<Operator> = listOf(Operator.Addition)
+
+    private var gameDuration = 90 * DateUtils.SECOND_IN_MILLIS
 
     val equationList = mutableListOf<Equation>()
 
@@ -28,32 +33,74 @@ class QuestionViewModel @ViewModelInject constructor(
 
     val showLoading = MutableLiveData(true)
 
-    fun prepareQuestions(gameLevel: Int) {
+    fun setGameLevel(gameLevel: Int) {
+        this.gameLevel = gameLevel
+    }
+
+    fun getGameLevel(): Int = gameLevel
+
+    fun setOperatorList(operatorList: List<Operator>) {
+        this.operatorList = operatorList
+    }
+
+    fun getTotalNumberOfQuestions(): Int = totalNumberOfQuestions
+
+    fun setGameMode(gameMode: GameMode) {
+        this.gameMode = gameMode
+    }
+
+    fun getGameMode(): GameMode = gameMode
+
+    private fun setGameDuration() {
+        gameDuration = when (gameLevel) {
+            2 -> {
+                if (operatorList.contains(Operator.Multiplication)) {
+                    60
+                } else {
+                    when (gameMode) {
+                        GameMode.VISUAL -> 60
+                        GameMode.ABACUS -> 180
+                    }
+                }
+            }
+            else -> 180
+        }
+    }
+
+    fun getGameDuration(): Long = gameDuration
+
+    fun prepareQuestions() {
         viewModelScope.launch(Dispatchers.Default) {
             showLoading.postValue(true)
+
+            setGameDuration()
+            setTotalNumberOfQuestions()
+            val numberOfRows = getNumberOfRows()
+
             while (equationList.size < totalNumberOfQuestions) {
-                val firstOperand = getOperand(gameLevel)
-                val secondOperand = getOperand(gameLevel)
-                val thirdOperand = getOperand(gameLevel)
-                val firstOperator = getOperator(gameLevel)
-                val secondOperator = getOperator(gameLevel)
-                val operands = mutableListOf<Float>(
-                    firstOperand.toFloat(),
-                    secondOperand.toFloat(),
-                    thirdOperand.toFloat()
-                )
-                val operators = mutableListOf(firstOperator, secondOperator)
-                val output = computeQuestion(operators, operands)
+
+                val operandsMutable = mutableListOf<Float>()
+                for (i in 0 until numberOfRows) {
+                    val operand = getOperand()
+                    operandsMutable.add(operand)
+                }
+                val operatorsMutable = mutableListOf<Operator>()
+                for (i in 0 until (numberOfRows - 1)) {
+                    val operator = getOperator()
+                    operatorsMutable.add(operator)
+                }
+
+                val operands = operandsMutable.toList()
+                val operators = operatorsMutable.toList()
+                val output = computeQuestion(operatorsMutable, operandsMutable)
                 if (output < 0 || (output - output.toInt() > 0)) {
                     continue
                 }
+
                 val equation =
                     getEquation(
-                        firstOperand,
-                        secondOperand,
-                        thirdOperand,
-                        firstOperator,
-                        secondOperator,
+                        operands,
+                        operators,
                         output.toInt()
                     )
                 equationList.add(equation)
@@ -62,32 +109,71 @@ class QuestionViewModel @ViewModelInject constructor(
         }
     }
 
-    private fun getOperand(gameLevel: Int): Int {
-        val upperLimit = when (gameLevel) {
-            1 -> 10
-            2 -> 25
-            3 -> 15
-            else -> 40
+    private fun getNumberOfRows(): Int = when (gameLevel) {
+        2 -> {
+            if (operatorList.contains(Operator.Multiplication)) {
+                2
+            } else {
+                when (gameMode) {
+                    GameMode.VISUAL -> 10
+                    GameMode.ABACUS -> 5
+                }
+            }
         }
-        return Random.nextInt(1, upperLimit)
+        else -> 3
     }
 
-    private fun getOperator(gameLevel: Int): Operator =
-        when (gameLevel) {
-            1 -> Operator.Addition
-            2 -> arrayOf(Operator.Addition, Operator.Subtraction)[Random.nextInt(2)]
-            3 -> arrayOf(
-                Operator.Addition,
-                Operator.Subtraction,
-                Operator.Multiplication
-            )[Random.nextInt(3)]
-            else -> arrayOf(
-                Operator.Addition,
-                Operator.Subtraction,
-                Operator.Multiplication,
-                Operator.Division
-            )[Random.nextInt(4)]
+
+    private fun setTotalNumberOfQuestions() {
+        totalNumberOfQuestions = when (gameLevel) {
+            2 -> {
+                if (operatorList.contains(Operator.Multiplication)) {
+                    30
+                } else {
+                    10
+                }
+            }
+            else -> 10
         }
+    }
+
+
+    private fun getOperand(): Float {
+        var upperLimit = 10
+        var lowerLimit = 1
+        when (gameLevel) {
+            2 -> {
+                if (operatorList.contains(Operator.Multiplication)) {
+                    lowerLimit = 2
+                    upperLimit = 10
+                } else {
+                    when (gameMode) {
+                        GameMode.VISUAL -> {
+                            lowerLimit = 1
+                            upperLimit = 10
+                        }
+                        GameMode.ABACUS -> {
+                            lowerLimit = 10
+                            upperLimit = 100
+                        }
+                    }
+                }
+            }
+            3 -> {
+                upperLimit = 15
+            }
+            else -> {
+                upperLimit = 40
+            }
+        }
+        return Random.nextInt(lowerLimit, upperLimit).toFloat()
+    }
+
+    private fun getOperator(): Operator {
+        val size = operatorList.size
+        val index = Random.nextInt(0, size)
+        return operatorList[index]
+    }
 
     private fun computeQuestion(
         operators: MutableList<Operator>,
@@ -120,15 +206,21 @@ class QuestionViewModel @ViewModelInject constructor(
         operatorList.maxByOrNull { it.priority } ?: operatorList[0]
 
     private fun getEquation(
-        operand1: Int,
-        operand2: Int,
-        operand3: Int,
-        operator1: Operator,
-        operator2: Operator,
+        operands: List<Float>,
+        operators: List<Operator>,
         answer: Int
     ): Equation {
-        val equationString =
-            "$operand1 ${getOperatorString(operator1)} $operand2 ${getOperatorString(operator2)} $operand3"
+        val equationStrBuilder = StringBuilder()
+        for (i in operands.indices) {
+            equationStrBuilder.append(
+                if (i < operators.size) {
+                    "${operands[i].toInt()} ${getOperatorString(operators[i])} "
+                } else {
+                    "${operands[i].toInt()}"
+                }
+            )
+        }
+        val equationString = equationStrBuilder.toString()
         return Equation(equationString, answer)
     }
 
@@ -148,8 +240,11 @@ class QuestionViewModel @ViewModelInject constructor(
             }
         }
 
-    fun startTimer(timeLeftInMillis: Long = quizDuration) {
-        timer = object : CountDownTimer(timeLeftInMillis, TimeUnit.SECONDS.toMillis(1)) {
+    fun startTimer() {
+        timer = object : CountDownTimer(
+            gameDuration * DateUtils.SECOND_IN_MILLIS,
+            TimeUnit.SECONDS.toMillis(1)
+        ) {
             override fun onFinish() {
                 _timeLeft.postValue(0L)
             }

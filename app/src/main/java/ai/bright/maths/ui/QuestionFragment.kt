@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,8 +20,6 @@ class QuestionFragment : Fragment(R.layout.fragment_question) {
     private val binding by viewBinding(FragmentQuestionBinding::bind)
 
     private val questionViewModel: QuestionViewModel by activityViewModels()
-
-    private val args: QuestionFragmentArgs by navArgs()
 
     private var navController: NavController? = null
 
@@ -34,8 +31,7 @@ class QuestionFragment : Fragment(R.layout.fragment_question) {
 
         navController = findNavController()
 
-        val gameLevel = args.gameLevel
-        questionViewModel.prepareQuestions(gameLevel)
+        questionViewModel.prepareQuestions()
 
         questionViewModel.apply {
 
@@ -55,19 +51,19 @@ class QuestionFragment : Fragment(R.layout.fragment_question) {
 
         binding.apply {
 
-            level.text = "Level $gameLevel"
+            level.text = "Level ${questionViewModel.getGameLevel()}"
 
             submitBtn.setOnClickListener {
                 val currentQuestion = questionViewModel.equationList[questionCounter]
                 currentQuestion.isResponseCorrect = answerInt == currentQuestion.answer
-                if (questionCounter < questionViewModel.totalNumberOfQuestions - 1) {
+                if (questionCounter < questionViewModel.getTotalNumberOfQuestions() - 1) {
                     questionCounter++
                     val nextQuestion = questionViewModel.equationList[questionCounter]
                     equation.text = nextQuestion.equationString
                     questionNumber.text = getString(
                         R.string.question_number,
                         questionCounter + 1,
-                        questionViewModel.totalNumberOfQuestions
+                        questionViewModel.getTotalNumberOfQuestions()
                     )
                     clearAnswer()
                 } else {
@@ -91,14 +87,14 @@ class QuestionFragment : Fragment(R.layout.fragment_question) {
             skipButton.setOnClickListener {
                 val currentQuestion = questionViewModel.equationList[questionCounter]
                 currentQuestion.isSkipped = true
-                if (questionCounter < questionViewModel.totalNumberOfQuestions - 1) {
+                if (questionCounter < questionViewModel.getTotalNumberOfQuestions() - 1) {
                     questionCounter++
                     val nextQuestion = questionViewModel.equationList[questionCounter]
                     equation.text = nextQuestion.equationString
                     questionNumber.text = getString(
                         R.string.question_number,
                         questionCounter + 1,
-                        questionViewModel.totalNumberOfQuestions
+                        questionViewModel.getTotalNumberOfQuestions()
                     )
                     clearAnswer()
                 } else {
@@ -120,7 +116,7 @@ class QuestionFragment : Fragment(R.layout.fragment_question) {
 
     private fun endGame() {
         val timeTaken =
-            questionViewModel.quizDuration - (questionViewModel._timeLeft.value ?: 0L)
+            questionViewModel.getGameDuration() - (questionViewModel._timeLeft.value ?: 0L)
         questionViewModel.endTimer()
         questionViewModel.timeTaken = (timeTaken / DateUtils.SECOND_IN_MILLIS).toInt()
         val action = QuestionFragmentDirections.actionQuestionFragmentToReportFragment()
@@ -135,7 +131,7 @@ class QuestionFragment : Fragment(R.layout.fragment_question) {
             binding.questionNumber.text = getString(
                 R.string.question_number,
                 questionCounter + 1,
-                questionViewModel.totalNumberOfQuestions
+                questionViewModel.getTotalNumberOfQuestions()
             )
         }
     }

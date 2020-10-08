@@ -6,12 +6,15 @@ import ai.bright.maths.utils.viewBinding
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 
 class LevelSelectionFragment : Fragment(R.layout.fragment_level_selection) {
 
     private val binding by viewBinding(FragmentLevelSelectionBinding::bind)
+
+    private val questionViewModel: QuestionViewModel by activityViewModels()
 
     private var navController: NavController? = null
 
@@ -24,10 +27,9 @@ class LevelSelectionFragment : Fragment(R.layout.fragment_level_selection) {
             arrayOf(level1, level2, level3, level4).forEach { level ->
                 level.setOnClickListener {
                     val gameLevel = it.tag.toString().toInt()
+                    questionViewModel.setGameLevel(gameLevel)
                     val action =
-                        LevelSelectionFragmentDirections.actionLevelSelectionFragmentToQuestionFragment2(
-                            gameLevel
-                        )
+                        LevelSelectionFragmentDirections.actionLevelSelectionFragmentToOperatorSelectionFragment()
                     navController?.navigate(action)
                 }
             }

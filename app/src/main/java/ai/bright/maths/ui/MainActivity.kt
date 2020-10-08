@@ -1,6 +1,5 @@
 package ai.bright.maths.ui
 
-import ai.bright.maths.R
 import ai.bright.maths.databinding.ActivityMainBinding
 import android.os.Bundle
 import android.view.View

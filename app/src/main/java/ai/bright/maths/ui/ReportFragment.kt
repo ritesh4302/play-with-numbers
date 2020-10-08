@@ -20,7 +20,7 @@ class ReportFragment : Fragment(R.layout.fragment_report) {
 
         questionViewModel.endTimer()
 
-        val totalQuestionCount = questionViewModel.totalNumberOfQuestions
+        val totalQuestionCount = questionViewModel.getTotalNumberOfQuestions()
         val skippedQuestionCount = questionViewModel.equationList.filter { it.isSkipped }.count()
         val correctAnswerCount =
             questionViewModel.equationList.filter { it.isResponseCorrect }.count()
