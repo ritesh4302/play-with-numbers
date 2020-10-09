@@ -63,6 +63,26 @@ class QuestionViewModel @ViewModelInject constructor(
                     }
                 }
             }
+            3 -> {
+                if (operatorList.contains(Operator.Multiplication)){
+                    60
+                } else {
+                    when (gameMode) {
+                        GameMode.VISUAL ->30
+                        GameMode.ABACUS->180
+                    }
+                }
+            }
+            4 -> {
+                if (operatorList.contains(Operator.Multiplication)){
+                    60
+                } else {
+                    when (gameMode) {
+                        GameMode.VISUAL ->30
+                        GameMode.ABACUS->180
+                    }
+                }
+            }
             else -> 180
         }
     }
@@ -120,9 +140,19 @@ class QuestionViewModel @ViewModelInject constructor(
                 }
             }
         }
-        else -> 3
-    }
+        3 -> {
+            if (operatorList.contains(Operator.Multiplication)){
+                3
+            }else {
+                when (gameMode) {
+                    GameMode.VISUAL ->10
+                    GameMode.ABACUS ->7
+                }
+            }
+        }
+        else -> 4
 
+    }
 
     private fun setTotalNumberOfQuestions() {
         totalNumberOfQuestions = when (gameLevel) {
@@ -160,8 +190,33 @@ class QuestionViewModel @ViewModelInject constructor(
                 }
             }
             3 -> {
-                upperLimit = 15
+                if (operatorList.contains(Operator.Multiplication)) {
+                    for (AS in 1 until getNumberOfRows()) {
+                        if (AS == 1) {
+                            lowerLimit = 11
+                            upperLimit = 100
+                        }
+                        if (AS == 2) {
+                            lowerLimit = 1
+                            upperLimit = 10
+
+                        }
+                    }
+                } else {
+                    when (gameMode) {
+                        GameMode.VISUAL -> {
+                            lowerLimit = 1
+                            upperLimit = 10
+                        }
+                        GameMode.ABACUS -> {
+                            lowerLimit = 10
+                            upperLimit = 100
+                        }
+                    }
+                }
+
             }
+
             else -> {
                 upperLimit = 40
             }
@@ -183,6 +238,7 @@ class QuestionViewModel @ViewModelInject constructor(
         val operatorIndex = operators.indexOf(higherPriorityOperator)
         val operand1 = operands[operatorIndex]
         val operand2 = operands[operatorIndex + 1]
+
         val output = computeEquation(operand1, operand2, higherPriorityOperator)
         operators.removeAt(operatorIndex)
         operands.removeAt(operatorIndex)
