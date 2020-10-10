@@ -39,7 +39,7 @@ class OperatorSelectionFragment : Fragment(R.layout.fragment_operator_selection)
 
     private fun navigateToModeSelectionFragment() {
         val action =
-            OperatorSelectionFragmentDirections.actionOperatorSelectionFragmentToTypeSelectionFragment()
+            OperatorSelectionFragmentDirections.actionOperatorSelectionFragmentToModeSelectionFragment()
         navController.navigate(action)
     }
 

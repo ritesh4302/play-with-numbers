@@ -31,25 +31,28 @@
             android:id="@+id/action_levelSelectionFragment_to_operatorSelectionFragment"
             app:destination="@id/operatorSelectionFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/operatorSelectionFragment"
         android:name="ai.bright.maths.ui.OperatorSelectionFragment"
         android:label="fragment_operator_selection"
-        tools:layout="@layout/fragment_operator_selection" >
+        tools:layout="@layout/fragment_operator_selection">
         <action
-            android:id="@+id/action_operatorSelectionFragment_to_typeSelectionFragment"
-            app:destination="@id/typeSelectionFragment" />
+            android:id="@+id/action_operatorSelectionFragment_to_modeSelectionFragment"
+            app:destination="@id/modeSelectionFragment" />
         <action
             android:id="@+id/action_operatorSelectionFragment_to_questionFragment"
             app:destination="@id/questionFragment" />
     </fragment>
+
     <fragment
-        android:id="@+id/typeSelectionFragment"
+        android:id="@+id/modeSelectionFragment"
         android:name="ai.bright.maths.ui.ModeSelectionFragment"
-        android:label="fragment_type_selection"
-        tools:layout="@layout/fragment_mode_selection" >
+        android:label="fragment_mode_selection"
+        tools:layout="@layout/fragment_mode_selection">
         <action
-            android:id="@+id/action_typeSelectionFragment_to_questionFragment"
+            android:id="@+id/action_modeSelectionFragment_to_questionFragment"
             app:destination="@id/questionFragment" />
     </fragment>
+
 </navigation>

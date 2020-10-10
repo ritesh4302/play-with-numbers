@@ -36,7 +36,7 @@ class ModeSelectionFragment : Fragment(R.layout.fragment_mode_selection) {
     }
 
     private fun navigateToQuestionFragment() {
-        val action = ModeSelectionFragmentDirections.actionTypeSelectionFragmentToQuestionFragment()
+        val action = ModeSelectionFragmentDirections.actionModeSelectionFragmentToQuestionFragment()
         navController.navigate(action)
     }
 }
