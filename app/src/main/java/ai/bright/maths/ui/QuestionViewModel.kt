@@ -1,9 +1,6 @@
 package ai.bright.maths.ui
 
-import ai.bright.maths.domain.model.Equation
-import ai.bright.maths.domain.model.GameMode
-import ai.bright.maths.domain.model.GameType
-import ai.bright.maths.domain.model.Operator
+import ai.bright.maths.domain.model.*
 import android.content.Context
 import android.os.CountDownTimer
 import android.text.format.DateUtils
@@ -24,8 +21,9 @@ class QuestionViewModel @ViewModelInject constructor(
     private var gameLevel: Int = 1
     private var totalNumberOfQuestions = 10
     private var gameMode: GameMode = GameMode.VISUAL
+    private var equationType: EquationType = EquationType.TYPE_1
     private var operatorList: List<Operator> = listOf(Operator.Addition)
-    private val gameType: GameType
+    val gameType: GameType
         get() = if (operatorList.contains(Operator.Multiplication)) {
             GameType.MULTIPLY
         } else {
@@ -58,6 +56,12 @@ class QuestionViewModel @ViewModelInject constructor(
 
     fun getGameMode(): GameMode = gameMode
 
+    fun setEquationType(equationType: EquationType) {
+        this.equationType = equationType
+    }
+
+    fun getEquationType(): EquationType = equationType
+
     private fun setGameDuration() {
         gameDuration = when (gameLevel) {
             2 -> {
@@ -74,7 +78,7 @@ class QuestionViewModel @ViewModelInject constructor(
                 when (gameType) {
                     GameType.MULTIPLY -> 60
                     GameType.ADD_SUBTRACT -> when (gameMode) {
-                        GameMode.VISUAL -> 30
+                        GameMode.VISUAL -> 60
                         GameMode.ABACUS -> 180
                     }
                     else -> throw Exception("$gameType not handled")
@@ -84,7 +88,7 @@ class QuestionViewModel @ViewModelInject constructor(
                 when (gameType) {
                     GameType.MULTIPLY -> 60
                     GameType.ADD_SUBTRACT -> when (gameMode) {
-                        GameMode.VISUAL -> 30
+                        GameMode.VISUAL -> 60
                         GameMode.ABACUS -> 180
                     }
                     else -> throw Exception("$gameType not handled")
@@ -152,7 +156,12 @@ class QuestionViewModel @ViewModelInject constructor(
                 GameType.MULTIPLY -> 3
                 GameType.ADD_SUBTRACT -> when (gameMode) {
                     GameMode.VISUAL -> 10
-                    GameMode.ABACUS -> 7
+                    GameMode.ABACUS -> {
+                        when (equationType) {
+                            EquationType.TYPE_1 -> 7
+                            EquationType.TYPE_2 -> 5
+                        }
+                    }
                 }
                 else -> throw Exception("$gameType not handled")
             }
@@ -203,10 +212,10 @@ class QuestionViewModel @ViewModelInject constructor(
                 when (gameType) {
                     GameType.MULTIPLY -> {
                         if (index == 0) {
-                            lowerLimit = 11
+                            lowerLimit = 12
                             upperLimit = 100
                         } else {
-                            lowerLimit = 2
+                            lowerLimit = 1
                             upperLimit = 10
                         }
                     }
@@ -217,8 +226,16 @@ class QuestionViewModel @ViewModelInject constructor(
                                 upperLimit = 10
                             }
                             GameMode.ABACUS -> {
-                                lowerLimit = 10
-                                upperLimit = 100
+                                when (equationType) {
+                                    EquationType.TYPE_1 -> {
+                                        lowerLimit = 10
+                                        upperLimit = 100
+                                    }
+                                    EquationType.TYPE_2 -> {
+                                        lowerLimit = 100
+                                        upperLimit = 1000
+                                    }
+                                }
                             }
                         }
                     }

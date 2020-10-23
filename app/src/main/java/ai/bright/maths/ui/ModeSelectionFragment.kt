@@ -31,8 +31,17 @@ class ModeSelectionFragment : Fragment(R.layout.fragment_mode_selection) {
 
         binding.abacus.setOnClickListener {
             questionViewModel.setGameMode(GameMode.ABACUS)
-            navigateToQuestionFragment()
+            when (questionViewModel.getGameLevel()) {
+                3, 4 -> navigateToEquationTypeSelectionFragment()
+                else -> navigateToQuestionFragment()
+            }
         }
+    }
+
+    private fun navigateToEquationTypeSelectionFragment() {
+        val action =
+            ModeSelectionFragmentDirections.actionModeSelectionFragmentToEquationConfigSelectionFragment()
+        navController.navigate(action)
     }
 
     private fun navigateToQuestionFragment() {

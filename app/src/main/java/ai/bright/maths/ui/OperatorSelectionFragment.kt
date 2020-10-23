@@ -33,8 +33,17 @@ class OperatorSelectionFragment : Fragment(R.layout.fragment_operator_selection)
         binding.multiplication.setOnClickListener {
             val operators = listOf(Operator.Multiplication)
             questionViewModel.setOperatorList(operators)
-            navigateToQuestionFragment()
+            when(questionViewModel.getGameLevel()) {
+                4 -> navigateToEquationTypeSelectionFragment()
+                else -> navigateToQuestionFragment()
+            }
         }
+    }
+
+    private fun navigateToEquationTypeSelectionFragment() {
+        val action =
+            OperatorSelectionFragmentDirections.actionOperatorSelectionFragmentToEquationConfigSelectionFragment()
+        navController.navigate(action)
     }
 
     private fun navigateToModeSelectionFragment() {

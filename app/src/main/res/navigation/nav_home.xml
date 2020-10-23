@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_operatorSelectionFragment_to_questionFragment"
             app:destination="@id/questionFragment" />
+        <action
+            android:id="@+id/action_operatorSelectionFragment_to_equationConfigSelectionFragment"
+            app:destination="@id/equationConfigSelectionFragment" />
     </fragment>
 
     <fragment
@@ -51,7 +54,20 @@
         android:label="fragment_mode_selection"
         tools:layout="@layout/fragment_mode_selection">
         <action
+            android:id="@+id/action_modeSelectionFragment_to_equationConfigSelectionFragment"
+            app:destination="@id/equationConfigSelectionFragment" />
+        <action
             android:id="@+id/action_modeSelectionFragment_to_questionFragment"
+            app:destination="@id/questionFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/equationConfigSelectionFragment"
+        android:name="ai.bright.maths.ui.EquationConfigSelectionFragment"
+        android:label="EquationConfigSelectionFragment"
+        tools:layout="@layout/fragment_equation_config_selection" >
+        <action
+            android:id="@+id/action_equationConfigSelectionFragment_to_questionFragment"
             app:destination="@id/questionFragment" />
     </fragment>
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.LevelSelectionFragment">
+    tools:context=".ui.ModeSelectionFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -36,59 +36,36 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:text="@string/select_the_level"
+            android:text="@string/select_the_equation_type"
             android:textSize="24sp"
-            app:layout_constraintBottom_toTopOf="@id/level_1"
+            app:layout_constraintBottom_toTopOf="@id/type_1"
             app:layout_constraintStart_toStartOf="@id/start_guideline" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/level_1"
+            android:id="@+id/type_1"
             style="@style/LevelOption"
             android:layout_marginEnd="8dp"
-            android:tag="1"
-            android:enabled="false"
-            android:text="@string/level_1"
-            app:layout_constraintBottom_toTopOf="@id/level_3"
-            app:layout_constraintEnd_toEndOf="@id/center_guideline"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@id/type_2"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
             app:layout_constraintStart_toStartOf="@id/start_guideline"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.4"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:text="2 digits x 7 rows" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/level_2"
-            style="@style/LevelOption"
-            android:layout_marginStart="8dp"
-            android:tag="2"
-            android:text="@string/level_2"
-            app:layout_constraintBottom_toTopOf="@id/level_4"
-            app:layout_constraintEnd_toEndOf="@id/end_guideline"
-            app:layout_constraintStart_toStartOf="@id/center_guideline"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.4"
-            app:layout_constraintVertical_chainStyle="packed" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/level_3"
+            android:id="@+id/type_2"
             style="@style/LevelOption"
             android:layout_marginEnd="8dp"
-            android:tag="3"
-            android:text="@string/level_3"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/center_guideline"
-            app:layout_constraintStart_toStartOf="@id/start_guideline"
-            app:layout_constraintTop_toBottomOf="@id/level_1" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/level_4"
-            style="@style/LevelOption"
-            android:layout_marginStart="8dp"
-            android:tag="4"
-            android:text="@string/level_4"
+            android:textAllCaps="false"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/end_guideline"
-            app:layout_constraintStart_toStartOf="@id/center_guideline"
-            app:layout_constraintTop_toBottomOf="@id/level_2" />
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintTop_toBottomOf="@id/type_1"
+            tools:text="3 digits x 5 rows" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
