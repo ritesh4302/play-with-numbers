@@ -24,6 +24,10 @@ class OperatorSelectionFragment : Fragment(R.layout.fragment_operator_selection)
 
         navController = findNavController()
 
+        if (questionViewModel.getGameLevel() == 4) {
+            binding.division.visibility = View.VISIBLE
+        }
+
         binding.additionSubtraction.setOnClickListener {
             val operators = listOf(Operator.Addition, Operator.Subtraction)
             questionViewModel.setOperatorList(operators)
@@ -33,10 +37,16 @@ class OperatorSelectionFragment : Fragment(R.layout.fragment_operator_selection)
         binding.multiplication.setOnClickListener {
             val operators = listOf(Operator.Multiplication)
             questionViewModel.setOperatorList(operators)
-            when(questionViewModel.getGameLevel()) {
+            when (questionViewModel.getGameLevel()) {
                 4 -> navigateToEquationTypeSelectionFragment()
                 else -> navigateToQuestionFragment()
             }
+        }
+
+        binding.division.setOnClickListener {
+            val operators = listOf(Operator.Division)
+            questionViewModel.setOperatorList(operators)
+            navigateToQuestionFragment()
         }
     }
 

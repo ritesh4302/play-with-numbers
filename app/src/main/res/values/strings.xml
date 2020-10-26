@@ -13,6 +13,7 @@
     <string name="level_4">Level 4</string>
     <string name="addition_subtraction">Addition / Subtraction</string>
     <string name="multiplication">Multiplication</string>
+    <string name="division">Division</string>
     <string name="visual">Visual</string>
     <string name="abacus">Abacus</string>
 </resources>

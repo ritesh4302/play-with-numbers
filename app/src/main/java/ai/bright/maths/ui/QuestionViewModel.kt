@@ -26,6 +26,8 @@ class QuestionViewModel @ViewModelInject constructor(
     val gameType: GameType
         get() = if (operatorList.contains(Operator.Multiplication)) {
             GameType.MULTIPLY
+        } else if (operatorList.contains(Operator.Division)) {
+            GameType.DIVIDE
         } else {
             GameType.ADD_SUBTRACT
         }
@@ -91,6 +93,7 @@ class QuestionViewModel @ViewModelInject constructor(
                         GameMode.VISUAL -> 60
                         GameMode.ABACUS -> 180
                     }
+                    GameType.DIVIDE -> 60
                     else -> throw Exception("$gameType not handled")
                 }
             }
@@ -112,7 +115,8 @@ class QuestionViewModel @ViewModelInject constructor(
 
                 val operandsMutable = mutableListOf<Float>()
                 for (i in 0 until numberOfRows) {
-                    val operand = getOperand(i)
+                    val prevOperand = if (i > 0) operandsMutable[i - 1] else -1f
+                    val operand = getOperand(i, prevOperand)
                     operandsMutable.add(operand)
                 }
                 val operatorsMutable = mutableListOf<Operator>()
@@ -153,9 +157,9 @@ class QuestionViewModel @ViewModelInject constructor(
         }
         3 -> {
             when (gameType) {
-                GameType.MULTIPLY -> 3
+                GameType.MULTIPLY -> 2
                 GameType.ADD_SUBTRACT -> when (gameMode) {
-                    GameMode.VISUAL -> 10
+                    GameMode.VISUAL -> 20
                     GameMode.ABACUS -> {
                         when (equationType) {
                             EquationType.TYPE_1 -> 7
@@ -166,8 +170,21 @@ class QuestionViewModel @ViewModelInject constructor(
                 else -> throw Exception("$gameType not handled")
             }
         }
-        else -> 4
-
+        4 -> {
+            when (gameType) {
+                GameType.ADD_SUBTRACT -> when (gameMode) {
+                    GameMode.VISUAL -> 30
+                    GameMode.ABACUS -> when (equationType) {
+                        EquationType.TYPE_1 -> 10
+                        EquationType.TYPE_2 -> 7
+                    }
+                }
+                GameType.MULTIPLY -> 2
+                GameType.DIVIDE -> 2
+                else -> throw Exception("$gameType not handled")
+            }
+        }
+        else -> 2
     }
 
     private fun setTotalNumberOfQuestions() {
@@ -183,7 +200,7 @@ class QuestionViewModel @ViewModelInject constructor(
         }
     }
 
-    private fun getOperand(index: Int = 0): Float {
+    private fun getOperand(index: Int = 0, prevOperand: Float = -1f): Float {
         var upperLimit = 10
         var lowerLimit = 1
         when (gameLevel) {
@@ -242,11 +259,79 @@ class QuestionViewModel @ViewModelInject constructor(
                     else -> throw Exception("$gameType not handled")
                 }
             }
-            else -> {
-                upperLimit = 40
+            4 -> {
+                when (gameType) {
+                    GameType.MULTIPLY -> when (equationType) {
+                        EquationType.TYPE_1 -> {
+                            if (index == 0) {
+                                lowerLimit = 12
+                                upperLimit = 100
+                            } else {
+                                lowerLimit = 2
+                                upperLimit = 10
+                            }
+                        }
+                        EquationType.TYPE_2 -> {
+                            if (index == 0) {
+                                lowerLimit = 1
+                                upperLimit = 10
+                            } else {
+                                lowerLimit = 12
+                                upperLimit = 100
+                            }
+                        }
+                    }
+                    GameType.ADD_SUBTRACT -> {
+                        when (gameMode) {
+                            GameMode.VISUAL -> {
+                                lowerLimit = 1
+                                upperLimit = 10
+                            }
+                            GameMode.ABACUS -> {
+                                when (equationType) {
+                                    EquationType.TYPE_1 -> {
+                                        lowerLimit = 10
+                                        upperLimit = 100
+                                    }
+                                    EquationType.TYPE_2 -> {
+                                        lowerLimit = 100
+                                        upperLimit = 1000
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    GameType.DIVIDE -> {
+                        if (index == 0) {
+                            lowerLimit = 2
+                            upperLimit = 10
+                        } else {
+                            var operand2 = 0f
+                            while (true) {
+                                val answer = Random.nextInt(12, 500)
+                                operand2 = answer * prevOperand
+                                if (getNumberOfDigits(operand2.toInt()) == 3) {
+                                    break
+                                }
+                            }
+                            return operand2
+                        }
+                    }
+                    else -> throw Exception("$gameType not handled")
+                }
             }
         }
         return Random.nextInt(lowerLimit, upperLimit).toFloat()
+    }
+
+    private fun getNumberOfDigits(number: Int): Int {
+        var i = 1
+        var num = number
+        while (num / 10 >= 1) {
+            num /= 10
+            i++
+        }
+        return i
     }
 
     private fun getOperator(): Operator {
@@ -280,7 +365,7 @@ class QuestionViewModel @ViewModelInject constructor(
             Operator.Addition -> operand1 + operand2
             Operator.Subtraction -> operand1 - operand2
             Operator.Multiplication -> operand1 * operand2
-            Operator.Division -> operand1 / operand2
+            Operator.Division -> operand2 / operand1
         }
 
     private fun getHigherPriorityOperator(operatorList: List<Operator>) =
@@ -292,14 +377,24 @@ class QuestionViewModel @ViewModelInject constructor(
         answer: Int
     ): Equation {
         val equationStrBuilder = StringBuilder()
-        for (i in operands.indices) {
-            equationStrBuilder.append(
-                if (i < operators.size) {
-                    "${operands[i].toInt()} ${getOperatorString(operators[i])} "
-                } else {
-                    "${operands[i].toInt()}"
-                }
-            )
+        var i = 0
+        while (i < operands.size) {
+            val operator = if (i < operators.size) operators[i] else Operator.Addition
+            if (operator == Operator.Division) {
+                equationStrBuilder.append(
+                    "${operands[i + 1].toInt()} ${getOperatorString(operator)} ${operands[i].toInt()}"
+                )
+                i++
+            } else {
+                equationStrBuilder.append(
+                    if (i < operators.size) {
+                        "${operands[i].toInt()} ${getOperatorString(operator)} "
+                    } else {
+                        "${operands[i].toInt()}"
+                    }
+                )
+            }
+            i++
         }
         val equationString = equationStrBuilder.toString()
         return Equation(equationString, answer)
