@@ -1,0 +1,3 @@
+[submodule "submod/algo_trading"]
+	path = submod/algo_trading
+	url = https://github.com/ritesh4302/algo_trading.git
